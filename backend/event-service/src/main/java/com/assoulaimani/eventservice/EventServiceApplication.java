@@ -68,7 +68,7 @@ public class EventServiceApplication {
             event1.setPrix(250.0);
             event1.setCategory(music);
             event1.setOrganisateurId(1L);
-            event1.setImageUrl("https://example.com/jazz-concert.jpg");
+            event1.setImageUrl("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSCErQJj0ZvbMOCrOaSyGNI4GnKdINV8qnfuA&s");
             eventRepository.save(event1);
 
             Event event2 = new Event();
@@ -81,7 +81,7 @@ public class EventServiceApplication {
             event2.setPrix(150.0);
             event2.setCategory(sport);
             event2.setOrganisateurId(2L);
-            event2.setImageUrl("https://example.com/derby.jpg");
+            event2.setImageUrl("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSGGICyVoieoY5tFkKn6rOFyQlSXhMZX-Cb9w&s");
             eventRepository.save(event2);
 
             Event event3 = new Event();
@@ -94,7 +94,7 @@ public class EventServiceApplication {
             event3.setPrix(0.0);
             event3.setCategory(conference);
             event3.setOrganisateurId(1L);
-            event3.setImageUrl("https://example.com/tech-conference.jpg");
+            event3.setImageUrl("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTK_U94Vg-uJuWGag2P4Nr0EE_Cb_TIjMtBNg&s");
             eventRepository.save(event3);
 
             Event event4 = new Event();
@@ -107,7 +107,7 @@ public class EventServiceApplication {
             event4.setPrix(100.0);
             event4.setCategory(culture);
             event4.setOrganisateurId(3L);
-            event4.setImageUrl("https://example.com/gnaoua.jpg");
+            event4.setImageUrl("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTWEdoonoV_e__ZQGwUrDskSxQMuprgvbozGg&s");
             eventRepository.save(event4);
 
             Event event5 = new Event();
@@ -120,7 +120,7 @@ public class EventServiceApplication {
             event5.setPrix(200.0);
             event5.setCategory(sport);
             event5.setOrganisateurId(2L);
-            event5.setImageUrl("https://example.com/marathon.jpg");
+            event5.setImageUrl("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSv3ck8qJXlXmKAv11lTiBa5_9L90Qc5Irt5Q&s");
             eventRepository.save(event5);
 
             // Afficher les données
