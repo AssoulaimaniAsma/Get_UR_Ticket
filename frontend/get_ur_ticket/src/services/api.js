@@ -67,7 +67,7 @@ export const getEventsByCategory = async (categoryId) => {
 };
 
 export const getAllCategories = async () => {
-    const response = await api.get(`${EVENT_API}/categories`);
+    const response = await api.get(`${EVENT_API}/events/categories`);
     return response.data;
 };
 
