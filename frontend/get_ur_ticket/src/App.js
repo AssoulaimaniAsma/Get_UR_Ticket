@@ -3,10 +3,13 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import Navbar from './components/Navbar';
 import Login from './pages/Login';
 import Register from './pages/Register';
-import Home from './pages/Home';
+import Home from './pages/User/Home';
 import EventDetails from './pages/EventDetails';
 import MyReservations from './pages/MyReservations';
 import Profile from './pages/Profile';
+import CreateEvent from './pages/Organizer/CreateEvent';
+import MyEvents from './pages/Organizer/MyEvents'
+import ManageEvents from './pages/Admin/ManageEvents'
 import { getCurrentUser } from './services/api';
 import './App.css';
 
@@ -41,6 +44,31 @@ function App() {
                             </PrivateRoute>
                         }
                     />
+                    <Route
+                        path="/organizer/create-event"
+                        element={
+                            <PrivateRoute>
+                                <CreateEvent />
+                            </PrivateRoute>
+                        }
+                    />
+                    <Route
+                        path="/admin/manage-events"
+                        element={
+                            <PrivateRoute>
+                                <ManageEvents />
+                            </PrivateRoute>
+                        }
+                    />
+                    <Route
+                        path="/organizer/my-events"
+                        element={
+                            <PrivateRoute>
+                                <MyEvents />
+                            </PrivateRoute>
+                        }
+                    />
+
                 </Routes>
             </div>
         </Router>

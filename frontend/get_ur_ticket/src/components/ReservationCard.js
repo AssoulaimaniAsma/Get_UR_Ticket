@@ -1,63 +1,49 @@
 import React from 'react';
-import { cancelReservation } from '../services/api';
+import './ReservationCard.css';
 
-function ReservationCard({ reservation, onUpdate }) {
-    const formatDate = (dateString) => {
-        const date = new Date(dateString);
-        return date.toLocaleDateString('fr-FR', {
-            day: 'numeric',
-            month: 'long',
-            year: 'numeric',
-            hour: '2-digit',
-            minute: '2-digit'
-        });
+const ReservationCard = ({ reservation, onCancel, onConfirm }) => {
+    const getStatusBadge = (statut) => {
+        const badges = {
+            EN_ATTENTE: { label: 'En attente', class: 'badge-warning' },
+            CONFIRMEE: { label: 'Confirmée', class: 'badge-success' },
+            ANNULEE: { label: 'Annulée', class: 'badge-danger' }
+        };
+        return badges[statut] || { label: statut, class: 'badge-default' };
     };
 
-    const handleCancel = async () => {
-        if (window.confirm('Êtes-vous sûr de vouloir annuler cette réservation ?')) {
-            try {
-                await cancelReservation(reservation.id);
-                alert('Réservation annulée avec succès');
-                onUpdate();
-            } catch (error) {
-                alert('Erreur lors de l\'annulation de la réservation');
-            }
-        }
-    };
-
-    const getStatusClass = (status) => {
-        switch (status) {
-            case 'CONFIRMED':
-                return 'status-confirmed';
-            case 'PENDING':
-                return 'status-pending';
-            case 'CANCELLED':
-                return 'status-cancelled';
-            default:
-                return '';
-        }
-    };
+    const badge = getStatusBadge(reservation.statut);
 
     return (
         <div className="reservation-card">
             <div className="reservation-header">
-                <h3>Réservation #{reservation.id}</h3>
-                <span className={`reservation-status ${getStatusClass(reservation.statut)}`}>
-                    {reservation.statut}
-                </span>
+                <h3>{reservation.event?.titre || 'Événement'}</h3>
+                <span className={`badge ${badge.class}`}>{badge.label}</span>
             </div>
-            <p><strong>Nombre de places:</strong> {reservation.nombrePlaces}</p>
-            <p><strong>Date de réservation:</strong> {formatDate(reservation.dateReservation)}</p>
             
-            {reservation.statut !== 'CANCELLED' && (
+            <div className="reservation-body">
+                <p><strong>📅 Date:</strong> {new Date(reservation.event?.dateEvent).toLocaleString('fr-FR')}</p>
+                <p><strong>📍 Lieu:</strong> {reservation.event?.lieu}</p>
+                <p><strong>🎫 Places réservées:</strong> {reservation.nombrePlaces}</p>
+                <p><strong>💰 Prix total:</strong> {reservation.prixTotal} DH</p>
+                <p><strong>📆 Réservé le:</strong> {new Date(reservation.dateReservation).toLocaleDateString('fr-FR')}</p>
+            </div>
+
+            {reservation.statut === 'EN_ATTENTE' && (
                 <div className="reservation-actions">
-                    <button onClick={handleCancel} className="btn btn-danger">
-                        Annuler la réservation
-                    </button>
+                    {onConfirm && (
+                        <button onClick={() => onConfirm(reservation.id)} className="btn btn-success">
+                            Confirmer
+                        </button>
+                    )}
+                    {onCancel && (
+                        <button onClick={() => onCancel(reservation.id)} className="btn btn-danger">
+                            Annuler
+                        </button>
+                    )}
                 </div>
             )}
         </div>
     );
-}
+};
 
 export default ReservationCard;

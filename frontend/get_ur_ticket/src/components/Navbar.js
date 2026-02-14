@@ -11,6 +11,15 @@ function Navbar() {
         navigate('/login');
     };
 
+    const getRoleDisplay = (role) => {
+        const roles = {
+            'ADMIN': '👑 Admin',
+            'ORGANIZER': '🎭 Organisateur',
+            'USER': '👤 Utilisateur'
+        };
+        return roles[role] || role;
+    };
+
     return (
         <nav className="navbar">
             <div className="navbar-content">
@@ -20,12 +29,35 @@ function Navbar() {
                 
                 {user ? (
                     <div className="navbar-links">
-                        <Link to="/">Événements</Link>
-                        <Link to="/my-reservations">Mes Réservations</Link>
-                        <Link to="/profile">Profil</Link>
-                        <span>Bonjour, {user.nom}</span>
+                        {/* Navigation pour tous */}
+                        <Link to="/">🏠 Événements</Link>
+                        
+                        {/* Navigation USER */}
+                        {user.role === 'USER' && (
+                            <Link to="/my-reservations">🎫 Mes Réservations</Link>
+                        )}
+                        
+                        {/* Navigation ORGANIZER */}
+                        {user.role === 'ORGANIZER' && (
+                            <>
+                                <Link to="/organizer/my-events">📋 Mes Événements</Link>
+                                <Link to="/organizer/create-event">➕ Créer Événement</Link>
+                            </>
+                        )}
+                        
+                        {/* Navigation ADMIN */}
+                        {user.role === 'ADMIN' && (
+                            <Link to="/admin/manage-events">⚙️ Gérer Événements</Link>
+                        )}
+                        
+                        {/* Info utilisateur */}
+                        <div className="user-info">
+                            <span>{user.nom}</span>
+                            <span className="user-role">{getRoleDisplay(user.role)}</span>
+                        </div>
+                        
                         <button onClick={handleLogout} className="btn-logout">
-                            Déconnexion
+                            🚪 Déconnexion
                         </button>
                     </div>
                 ) : (
