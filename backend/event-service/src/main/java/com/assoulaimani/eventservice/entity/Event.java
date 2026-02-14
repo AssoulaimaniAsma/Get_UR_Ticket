@@ -1,9 +1,7 @@
 package com.assoulaimani.eventservice.entity;
 
-
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -12,7 +10,6 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "events")
 @Data
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class Event {
@@ -50,6 +47,11 @@ public class Event {
     private Long organisateurId;
 
     private String imageUrl;
+
+    // ✅ NOUVEAU: Statut d'approbation
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private EventStatus statut = EventStatus.PENDING;
 
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt = LocalDateTime.now();

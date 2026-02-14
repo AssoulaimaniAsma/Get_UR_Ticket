@@ -2,6 +2,7 @@ package com.assoulaimani.eventservice;
 
 import com.assoulaimani.eventservice.entity.Category;
 import com.assoulaimani.eventservice.entity.Event;
+import com.assoulaimani.eventservice.entity.EventStatus;
 import com.assoulaimani.eventservice.repository.CategoryRepository;
 import com.assoulaimani.eventservice.repository.EventRepository;
 import org.springframework.boot.CommandLineRunner;
@@ -13,15 +14,14 @@ import org.springframework.context.annotation.Bean;
 import java.time.LocalDateTime;
 import java.util.List;
 
-
 @SpringBootApplication
 @EnableDiscoveryClient
-
 public class EventServiceApplication {
 
     public static void main(String[] args) {
         SpringApplication.run(EventServiceApplication.class, args);
     }
+
     @Bean
     public CommandLineRunner loadEventData(CategoryRepository categoryRepository,
                                            EventRepository eventRepository) {
@@ -69,6 +69,7 @@ public class EventServiceApplication {
             event1.setCategory(music);
             event1.setOrganisateurId(1L);
             event1.setImageUrl("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSCErQJj0ZvbMOCrOaSyGNI4GnKdINV8qnfuA&s");
+            event1.setStatut(EventStatus.APPROVED); // ✅ Événement approuvé
             eventRepository.save(event1);
 
             Event event2 = new Event();
@@ -82,6 +83,7 @@ public class EventServiceApplication {
             event2.setCategory(sport);
             event2.setOrganisateurId(2L);
             event2.setImageUrl("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSGGICyVoieoY5tFkKn6rOFyQlSXhMZX-Cb9w&s");
+            event2.setStatut(EventStatus.APPROVED); // ✅ Événement approuvé
             eventRepository.save(event2);
 
             Event event3 = new Event();
@@ -95,6 +97,7 @@ public class EventServiceApplication {
             event3.setCategory(conference);
             event3.setOrganisateurId(1L);
             event3.setImageUrl("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTK_U94Vg-uJuWGag2P4Nr0EE_Cb_TIjMtBNg&s");
+            event3.setStatut(EventStatus.PENDING); // ✅ En attente d'approbation
             eventRepository.save(event3);
 
             Event event4 = new Event();
@@ -108,6 +111,7 @@ public class EventServiceApplication {
             event4.setCategory(culture);
             event4.setOrganisateurId(3L);
             event4.setImageUrl("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTWEdoonoV_e__ZQGwUrDskSxQMuprgvbozGg&s");
+            event4.setStatut(EventStatus.APPROVED); // ✅ Événement approuvé
             eventRepository.save(event4);
 
             Event event5 = new Event();
@@ -121,6 +125,7 @@ public class EventServiceApplication {
             event5.setCategory(sport);
             event5.setOrganisateurId(2L);
             event5.setImageUrl("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSv3ck8qJXlXmKAv11lTiBa5_9L90Qc5Irt5Q&s");
+            event5.setStatut(EventStatus.REJECTED); // ✅ Événement rejeté (exemple)
             eventRepository.save(event5);
 
             // Afficher les données
@@ -134,7 +139,8 @@ public class EventServiceApplication {
                     "  - [ID: " + event.getId() + "] " + event.getTitre() +
                             " | Date: " + event.getDateEvent() +
                             " | Places: " + event.getCapaciteDisponible() + "/" + event.getCapaciteTotal() +
-                            " | Prix: " + event.getPrix() + " DH"
+                            " | Prix: " + event.getPrix() + " DH" +
+                            " | Statut: " + event.getStatut() // ✅ Afficher le statut
             ));
 
             System.out.println("\n========== Données chargées avec succès ! ==========\n");

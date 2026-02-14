@@ -19,6 +19,7 @@ public class Event {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    private String statut; // PENDING, APPROVED, REJECTED
 
     @Column(nullable = false)
     private String titre;
