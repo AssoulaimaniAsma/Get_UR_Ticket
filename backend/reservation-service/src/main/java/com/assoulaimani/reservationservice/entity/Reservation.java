@@ -29,8 +29,22 @@ public class Reservation {
 
     @Column(name = "date_reservation", nullable = false)
     private LocalDateTime dateReservation;
+    @Column(nullable = false)
+    private Double prixTotal = 0.0;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private ReservationStatus statut;
+    @PrePersist
+    protected void onCreate() {
+        if (this.dateReservation == null) {
+            this.dateReservation = LocalDateTime.now();
+        }
+        if (this.statut == null) {
+            this.statut = ReservationStatus.PENDING;
+        }
+        if (this.prixTotal == null) {
+            this.prixTotal = 0.0;
+        }
+    }
 }

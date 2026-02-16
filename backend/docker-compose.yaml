@@ -1,0 +1,219 @@
+services:
+  discovery-service:
+    build: ./discovery-service
+    container_name:  discovery-doc
+    ports:
+      - "8761:8761"
+    expose:
+      - "8761"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8761/actuator/health"]
+      interval: 4s
+      retries: 10
+    networks: # AJOUT: Réseau pour la communication
+      - ticket-network
+  config-service:
+    build: ./config-service
+    container_name: config-doc
+    ports:
+      - '9999:9999'
+    expose:
+      - '9999'
+    healthcheck:
+      test: [ "CMD","curl","-f", "http://localhost:9999/actuator/health" ]
+      interval: 4s
+      retries: 10
+      start_period: 10s
+    environment:
+      - DISCOVERY_SERVICE_URL=http://discovery-doc:8761/eureka
+    depends_on:
+      discovery-service:
+        condition: service_healthy
+    networks: # AJOUT: Réseau pour la communication
+      - ticket-network
+
+  event_service:
+    build: ./event-service
+    container_name: event-doc
+    ports:
+      - "7071:7071"
+    expose:
+      - "7071"
+    healthcheck:
+      test: [ "CMD","curl","-f", "http://localhost:7071/actuator/health" ]
+      interval: 4s
+      retries: 20
+      start_period: 40s
+    environment:
+      - DISCOVERY_SERVICE_URL=http://discovery-doc:8761/eureka
+      - CONFIG_SERVICE_URL=http://config-doc:9999
+    volumes:
+      # ✅ Monter un volume pour persister les données H2
+      - event-h2-data:/h2-database
+    depends_on:
+      config-service:
+        condition: service_healthy
+    networks: # AJOUT: Réseau pour la communication
+      - ticket-network
+
+  user_service:
+    build: ./user-service
+    container_name: user-doc
+    ports:
+      - "7072:7072"
+    expose:
+      - "7072"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:7072/actuator/health"]
+      interval: 10s
+      retries: 20
+      timeout: 5s
+      start_period: 40s
+    environment:
+      - DISCOVERY_SERVICE_URL=http://discovery-doc:8761/eureka
+#      - CONFIG_SERVICE_URL=http://config-doc:9999
+    depends_on:
+      config-service:
+        condition: service_healthy
+    networks: # AJOUT: Réseau pour la communication
+      - ticket-network
+
+  reservation_service:
+    build: ./reservation-service
+    container_name: reservation-doc
+    ports:
+      - "7073:7073"
+    expose:
+      - "7073"
+    healthcheck:
+      test: [ "CMD","curl","-f", "http://localhost:7073/actuator/health" ]
+      interval: 50s
+      retries: 10
+      start_period: 20s
+    environment:
+      - DISCOVERY_SERVICE_URL=http://discovery-doc:8761/eureka
+      - CONFIG_SERVICE_URL=http://config-doc:9999
+    depends_on:
+      config-service:
+        condition: service_healthy
+      event_service:
+        condition: service_healthy
+      user_service:
+        condition: service_healthy
+    networks: # N'oubliez pas d'ajouter le réseau !
+      - ticket-network
+  gateway-service:
+    build: ./gateway-service
+    container_name: gateway-doc
+    ports:
+      - '8888:8888'
+    expose:
+      - '8888'
+    healthcheck:
+      test: [ "CMD","curl","-f", "http://localhost:8888/actuator/health" ]
+      interval: 4s
+      retries: 10
+      start_period: 25s
+    environment:
+      - DISCOVERY_SERVICE_URL=http://discovery-doc:8761/eureka
+    depends_on:
+      reservation_service:
+        condition: service_healthy
+    networks: # AJOUT: Réseau pour la communication
+      - ticket-network
+
+    # ============================================================
+    # NOUVEAU SERVICE: PROMETHEUS
+    # ============================================================
+  prometheus:
+    image: prom/prometheus:latest    # Télécharge l'image Docker officielle de Prometheus depuis Docker Hub
+    container_name: prometheus-doc #Nom du conteneur
+    ports:
+      - "9090:9090"                  # Port pour accéder à l'interface web
+    volumes:
+      # Monte le fichier de configuration Prometheus
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+      # Volume pour persister les données de métriques
+      - prometheus-data:/prometheus
+    command:
+      # Spécifie le fichier de configuration à utiliser
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      # Définit où stocker les données
+      - '--storage.tsdb.path=/prometheus'
+      # Durée de rétention des données (15 jours par défaut)
+      - '--storage.tsdb.retention.time=15d'
+      # Active l'API web pour les requêtes
+      - '--web.enable-lifecycle'
+    networks:
+      - ticket-network
+    restart: unless-stopped          # Redémarre automatiquement en cas d'erreur
+    depends_on:
+      # Attend que tous les services soient healthy avant de démarrer
+      gateway-service:
+        condition: service_healthy
+    healthcheck:
+      # Vérifie que Prometheus est accessible
+      test: [ "CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:9090/-/healthy" ]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+    # ============================================================
+    # NOUVEAU SERVICE: GRAFANA
+    # ============================================================
+  grafana:
+    image: grafana/grafana:latest    # Image officielle Grafana
+    container_name: grafana-doc
+    ports:
+      - "3000:3000"                  # Port pour accéder à l'interface web
+    environment:
+      # Définit le nom d'utilisateur admin
+      - GF_SECURITY_ADMIN_USER=admin
+      # Définit le mot de passe admin (CHANGEZ-LE en production!)
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      # Désactive l'inscription publique
+      - GF_USERS_ALLOW_SIGN_UP=false
+      # Nom de l'instance Grafana
+      - GF_SERVER_ROOT_URL=http://localhost:3001
+      # Active le mode anonyme en lecture seule (optionnel)
+      - GF_AUTH_ANONYMOUS_ENABLED=false
+    volumes:
+      # Volume pour persister les dashboards, datasources, etc.
+      - grafana-data:/var/lib/grafana
+      # Monte le dossier de provisioning pour auto-configurer Grafana
+      - ./monitoring/grafana/provisioning:/etc/grafana/provisioning
+    networks:
+      - ticket-network
+    restart: unless-stopped
+    depends_on:
+      # Grafana a besoin de Prometheus comme source de données
+      prometheus:
+        condition: service_healthy
+    healthcheck:
+      # Vérifie que Grafana est accessible
+      test: [ "CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:3001/api/health" ]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+  # ============================================================
+  # VOLUMES: Persistance des données
+  # ============================================================
+volumes:
+  # Stocke les données de métriques de Prometheus
+  # Sans ce volume, vous perdriez toutes les métriques au redémarrage
+  prometheus-data:
+    driver: local
+  
+  # Stocke les dashboards, datasources et configs de Grafana
+  # Sans ce volume, vous perdriez vos dashboards au redémarrage
+  grafana-data:
+    driver: local
+  event-h2-data: # ✅ AJOUTER
+    driver: local
+  # ============================================================
+  # NETWORKS: Réseau pour la communication inter-conteneurs
+  # ============================================================
+networks:
+  ticket-network:
+    driver: bridge                   # Type de réseau Docker
+    name: ticket-network             # Nom explicite du réseau
