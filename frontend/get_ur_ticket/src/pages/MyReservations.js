@@ -21,6 +21,7 @@ function MyReservations() {
         try {
             const data = await getMyReservations(user.id);
             setReservations(data);
+            console.log(data);
             setLoading(false);
         } catch (error) {
             console.error('Erreur lors du chargement des réservations:', error);

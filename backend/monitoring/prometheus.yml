@@ -1,0 +1,69 @@
+# Configuration globale de Prometheus
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+  external_labels:
+    monitor: 'ticket-project'
+    environment: 'development'
+
+# Configuration des jobs de collecte (scraping)
+scrape_configs:
+
+  # Job 1: Discovery Service
+  - job_name: 'discovery-service'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets: ['discovery-doc:8761']
+        labels:
+          service: 'discovery'
+          type: 'infrastructure'
+
+  # Job 2: Config Service
+  - job_name: 'config-service'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets: ['config-doc:9999']
+        labels:
+          service: 'config'
+          type: 'infrastructure'
+
+  # Job 3: Gateway Service
+  - job_name: 'gateway-service'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets: ['gateway-doc:8888']
+        labels:
+          service: 'gateway'
+          type: 'infrastructure'
+
+  # Job 4: event Service
+  - job_name: 'event-service'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets: ['event-doc:7071']
+        labels:
+          service: 'event'
+          type: 'business'
+
+  # Job 5: user Service
+  - job_name: 'user-service'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets: ['user-doc:7072']
+        labels:
+          service: 'user'
+          type: 'business'
+
+  # Job 6: reservation Service
+  - job_name: 'reservation-service'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets: ['reservation-doc:7073']
+        labels:
+          service: 'reservation'
+          type: 'business'
+
+  # Job 7: Auto-monitoring de Prometheus
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']

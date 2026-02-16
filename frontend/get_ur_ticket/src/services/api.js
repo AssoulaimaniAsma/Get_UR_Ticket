@@ -115,6 +115,11 @@ export const getAllCategories = async () => {
     const response = await api.get(`${EVENT_API}/events/categories`);
     return response.data;
 };
+export const getUserById = async (id) => {
+    const response = await api.get(`${USER_API}/users/${id}`);
+    return response.data;
+};
+
 
 // ========== EVENT SERVICE - ORGANIZER ==========
 export const createEvent = async (eventData) => {
@@ -185,5 +190,12 @@ export const cancelReservation = async (id) => {
 
 export const confirmReservation = async (id) => {
     const response = await api.put(`${RESERVATION_API}/reservations/${id}/confirmer`);
+    return response.data;
+};
+// Réservations de l'organisateur
+export const getOrganizerReservations = async (organizerId) => {
+    const response = await api.get(
+        `${RESERVATION_API}/reservations/organizer/${organizerId}`
+    );
     return response.data;
 };

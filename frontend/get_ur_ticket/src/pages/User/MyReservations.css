@@ -66,3 +66,43 @@
         grid-template-columns: 1fr;
     }
 }
+/* Ajoutez dans App.css */
+.table-container {
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    overflow-x: auto;
+}
+
+.reservations-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.95rem;
+}
+
+.reservations-table thead tr {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+}
+
+.reservations-table th {
+    padding: 1rem 1.25rem;
+    text-align: left;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.reservations-table td {
+    padding: 1rem 1.25rem;
+    border-bottom: 1px solid #ecf0f1;
+    vertical-align: middle;
+}
+
+.reservations-table tbody tr:hover {
+    background-color: #f8f9ff;
+    transition: background 0.2s;
+}
+
+.reservations-table tbody tr:last-child td {
+    border-bottom: none;
+}

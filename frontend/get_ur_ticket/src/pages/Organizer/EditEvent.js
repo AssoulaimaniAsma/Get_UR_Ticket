@@ -7,6 +7,8 @@ const EditEvent = () => {
     const { id } = useParams();
     const navigate = useNavigate();
     const [categories, setCategories] = useState([]);
+    const user = JSON.parse(localStorage.getItem("user"));
+const userId = user.id;
     const [formData, setFormData] = useState({
         titre: '',
         description: '',
@@ -58,14 +60,16 @@ const EditEvent = () => {
         });
     };
 
-    const handleSubmit = async (e) => {
+   /* const handleSubmit = async (e) => {
         e.preventDefault();
         try {
             const eventData = {
                 ...formData,
                 dateEvent: new Date(formData.dateEvent).toISOString()
             };
+            console.log(eventData);
             await updateEvent(id, eventData);
+
             alert('Événement modifié avec succès');
             navigate('/organizer/my-events');
         } catch (error) {
@@ -73,6 +77,41 @@ const EditEvent = () => {
             alert('Erreur lors de la modification');
         }
     };
+*/
+const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    try {
+        const eventData = {
+            titre: formData.titre,
+            description: formData.description,
+            dateEvent: new Date(formData.dateEvent).toISOString(),
+            lieu: formData.lieu,
+            capaciteTotal: formData.capaciteTotal,
+            prix: formData.prix,
+            imageUrl: formData.imageUrl,
+
+            // 🔥 IMPORTANT
+            organisateurId: userId, // ← mets l'ID réel de l'utilisateur connecté
+
+            // 🔥 Structure attendue par Spring
+            category: {
+                id: formData.categoryId
+            }
+        };
+
+        console.log(eventData);
+
+        await updateEvent(id, eventData);
+
+        alert('Événement modifié avec succès');
+        navigate('/organizer/my-events');
+
+    } catch (error) {
+        console.error('Erreur:', error);
+        alert('Erreur lors de la modification');
+    }
+};
 
     return (
         <div className="create-event-container">

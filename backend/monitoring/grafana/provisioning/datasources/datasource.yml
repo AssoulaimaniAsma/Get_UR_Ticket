@@ -1,0 +1,15 @@
+# Version de l'API de provisioning
+apiVersion: 1
+
+# Liste des sources de données à configurer automatiquement
+datasources:
+  # Datasource 1: Prometheus
+  - name: Prometheus                    # Nom affiché dans Grafana
+    type: prometheus                    # Type de datasource
+    access: proxy                       # Grafana fait les requêtes (pas le navigateur)
+    url: http://prometheus-doc:9090     # URL de Prometheus (nom du conteneur)
+    isDefault: true                     # Datasource par défaut
+    editable: true                      # Peut être modifié dans l'interface
+    jsonData:
+      httpMethod: POST                  # Méthode HTTP pour les requêtes
+      timeInterval: 15s                 # Intervalle de temps par défaut

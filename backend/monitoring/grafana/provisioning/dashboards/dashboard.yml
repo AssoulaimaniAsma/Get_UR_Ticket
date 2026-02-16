@@ -1,0 +1,16 @@
+# Version de l'API de provisioning
+apiVersion: 1
+
+# Configuration des providers de dashboards
+providers:
+  # Provider 1: Dashboards par défaut
+  - name: 'Get Your Ticket Dashboards'           # Nom du provider
+    orgId: 1                            # ID de l'organisation (défaut: 1)
+    folder: 'Get Your Ticket Services'           # Dossier dans l'interface Grafana
+    type: file                          # Type: fichiers JSON
+    disableDeletion: false              # Permet de supprimer dans l'interface
+    updateIntervalSeconds: 10           # Vérifie les changements toutes les 10s
+    allowUiUpdates: true                # Permet de modifier dans l'interface
+    options:
+      # Chemin où Grafana cherche les fichiers JSON de dashboards
+      path: /etc/grafana/provisioning/dashboards

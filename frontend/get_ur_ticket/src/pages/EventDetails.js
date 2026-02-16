@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { getEventById, createReservation, getCurrentUser } from '../services/api';
+import { getEventById, createReservation, getCurrentUser,getUserById } from '../services/api';
 
 function EventDetails() {
     const { id } = useParams();
@@ -10,6 +10,7 @@ function EventDetails() {
     const [loading, setLoading] = useState(true);
     const [message, setMessage] = useState('');
     const user = getCurrentUser();
+    const [organizer, setOrganizer] = useState(null);
 
     useEffect(() => {
         loadEvent();
@@ -18,7 +19,13 @@ function EventDetails() {
     const loadEvent = async () => {
         try {
             const data = await getEventById(id);
+            console.log(data);
             setEvent(data);
+             if (data.organisateurId) {
+            const user = await getUserById(data.organisateurId);
+            console.log(user);
+            setOrganizer(user);
+            }   
             setLoading(false);
         } catch (error) {
             console.error('Erreur lors du chargement de l\'événement:', error);
@@ -79,9 +86,16 @@ function EventDetails() {
                     <h1>{event.titre}</h1>
                     {event.category && (
                         <span className="event-card-category">
-                            {event.category.nom}
+                            {event.category.nom} 
                         </span>
                     )}
+                    {organizer && (
+    <div className="event-card-category">
+        <span >👤 Organisateur: </span>
+        <span>{organizer.nom}</span>
+    </div>
+)}
+
                 </div>
 
                 <div className="event-details-info">
